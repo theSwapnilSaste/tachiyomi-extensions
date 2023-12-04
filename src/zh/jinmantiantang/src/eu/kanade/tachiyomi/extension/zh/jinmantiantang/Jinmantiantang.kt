@@ -48,7 +48,7 @@ class Jinmantiantang : ParsedHttpSource(), ConfigurableSource {
             preferences.getString(MAINSITE_RATELIMIT_PREF, MAINSITE_RATELIMIT_PREF_DEFAULT)!!.toInt(),
             preferences.getString(MAINSITE_RATELIMIT_PERIOD, MAINSITE_RATELIMIT_PERIOD_DEFAULT)!!.toLong(),
         )
-        .addInterceptor(updateUrlInterceptor)
+        .apply { interceptors().add(0, updateUrlInterceptor) }
         .addInterceptor(ScrambledImageInterceptor).build()
 
     // 点击量排序(人气)
@@ -162,7 +162,7 @@ class Jinmantiantang : ParsedHttpSource(), ConfigurableSource {
     override fun mangaDetailsParse(document: Document): SManga = SManga.create().apply {
         title = document.selectFirst("h1")!!.text()
         // keep thumbnail_url same as the one in popularMangaFromElement()
-        thumbnail_url = document.selectFirst(".thumb-overlay > img")!!.attr("src").substringBeforeLast('.') + "_3x4.jpg"
+        thumbnail_url = document.selectFirst(".thumb-overlay > noscript > img")!!.attr("src").substringBeforeLast('.') + "_3x4.jpg"
         author = selectAuthor(document)
         genre = selectDetailsStatusAndGenre(document, 0).trim().split(" ").joinToString(", ")
 
